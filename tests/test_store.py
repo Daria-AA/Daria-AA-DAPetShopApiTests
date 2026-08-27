@@ -74,15 +74,11 @@ class TestStore:
         with allure.step("Отправка запроса на получение инвентаря магазина"):
             response = requests.get(url=f"{BASE_URL}/store/inventory")
 
-        with allure.step("Проверка статуса ответа"):
-            assert response.status_code == 200, "Код ответа не совпал с ожидаемым"
-
-        with allure.step("Проверка формата данных в ответе"):
+        with allure.step("Проверка статуса ответа и валидация JSON-схемы"):
             response_json = response.json()
-            required_keys = ["approved", "placed", "delivered"]
-            for key in required_keys:
-                assert key in response_json, f"В ответе отсутствует ключ '{key}'"
-                assert isinstance(response_json[key], int), f"Поле '{key}' должно быть целым числом (int)"
+            assert response.status_code == 200, "Код ответа не совпал с ожидаемым"
+            jsonschema.validate(response_json, STORE_SCHEMA)
+
 
 
 
